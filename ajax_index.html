@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>GSちゃんねる</title>
+    <style>
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <nav>
+            <h1>GSちゃんねる</h1>
+        </nav>
+    </header>
+
+    <ul id="echo">
+        <!-- データ表示部分 -->
+    </ul>
+
+    <div>
+        <button type="button" id="showNew">新着レスを表示</button>
+    </div>
+
+    <form id="insert_form">
+        <div>
+            <input type="text" id="name" name="name" placeholder="名前（省略可）">
+        </div>
+        <div>
+            <textarea id="comment" name="comment" rows="3" placeholder="コメント"></textarea>
+        </div>
+        <div>
+            <button type="button" id="send">送信</button>
+        </div>
+    </form>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        // DBから取得したデータを表示する関数
+        function listData(data) {
+            // dataを<li>に入れていい感じに表示しよう！
+            var str = "";
+            for (var i = 0; i < data.length; i++) {
+                //ダブルクオーテーションだったら上の形、バッククオーテーションのときは下の形で書く。
+                str += `<li>
+                     <p>${data[i].id}${data[i].name}${data[i].indate}</p>
+                     <p>${data[i].comment}</p>
+                    </li>`
+            }
+            return str;
+        }
+
+        // DBからデータを取得する関数
+        function selectData() {
+            // リクエスト先の指定
+            const url = 'ajax_get.php';
+            // getJSONする
+            $.getJSON(url)
+                .done(function (data) { //dataはなんでもいい！
+                    $("#echo").html(listData(data));
+                    console.log(data);
+                })
+                .fail(function () {
+                    console.log("error");
+                })
+                .always(function () {
+                    console.log("finish!");
+                });
+        }
+
+        // DBへデータを登録する関数
+        function insertData() {
+            // リクエスト先の指定
+            const url = 'ajax_post.php';
+            // 入力情報の取得
+            var data = {
+                name: $("#name").val(),
+                comment: $("#comment").val()
+            };
+            // ajaxする(url,data,type,datatypeを指定)
+            //ajaxはgetJSONよりもう少し多めに設定してあげる必要がある
+            $.ajax({
+                url: url,
+                data: data,
+                type: "POST", //getかpostか聞かれている
+                datatype: "JSON"
+            })
+                .done(function (data) { //dataはなんでもいい！
+                    console.log(data);
+                    listData(data)
+                })
+                .fail(function () {
+                    console.log("error");
+                })
+                .always(function () {
+                    console.log("finish!");
+                });
+        }
+
+        // 読み込み時にgetJSONする関数を実行
+        selectData();
+
+        // 更新ボタン押したらgetJSONする
+        $('#showNew').on('click', function () {
+            selectData();
+        });
+
+        // 送信ボタン押したらajaxする関数を実行
+        $('#send').on('click', function () {
+            insertData();
+            selectData();
+        });
+
+    </script>
+
+</body>
+
+</html>

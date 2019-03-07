@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ajax練習</title>
+</head>
+
+<body>
+    <h1>ajax練習</h1>
+    <button id="get">json取得</button>
+    <p id="sum"></p>
+    <ul id="echo"></ul>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        // リクエスト先の指定
+        const url = `ajax.json`; //外部のAPIデータをもってきたいときはここにAPIのURLを書く
+
+        // ボタン押したらgetJSONする
+        //ajax,getJSONの書き方は決まっている
+        $('#get').on('click', function () {
+            $.getJSON(url)
+                .done(function (umeco) { //dataはなんでもいい！
+                    $("#echo").html(writedata(umeco));
+                    $("#sum").text(writesum(umeco));
+
+                    console.log(umeco);
+                })
+                .fail(function () {
+                    console.log("error");
+                })
+                .always(function () {
+                    console.log("finish!");
+                });
+        });
+        //dataは上のumecoとあわせなくてもいい。それぞれで統一しておけばOK！
+        function writedata(data) {
+            var str = "";
+            //forで書く場合_回数に融通きかせやすい！
+            // for (var i = 0; i < data.length; i++) {
+            //     //ダブルクオーテーションだったら上の形、バッククオーテーションのときは下の形で書く。
+            //     str += "<li>email:" + data[i].email + "/pass:" + data[i].pass + "</li >"  
+            //     str += `<li>${data[i].task}</li>`  //${}の中身が変数名ということ
+            // }
+            //foreachで書きたいとき_全部まわすことになる
+            data.forEach(function (elm) {
+                str += `<li>${elm.email}</li>`;
+            });
+            return str;
+        }
+        function writesum(data) {
+            var sum = 0;
+            //forで書く場合_回数に融通きかせやすい！
+            // for (var i = 0; i < data.length; i++) {
+            //     //ダブルクオーテーションだったら上の形、バッククオーテーションのときは下の形で書く。
+            //     str += "<li>email:" + data[i].email + "/pass:" + data[i].pass + "</li >"  
+            //     str += `<li>${data[i].task}</li>`  //${}の中身が変数名ということ
+            // }
+            //foreachで書きたいとき_全部まわすことになる
+            data.forEach(function (elm) {
+                sum += Number(`${elm.id}`);
+            });
+            return sum;
+        }
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>
